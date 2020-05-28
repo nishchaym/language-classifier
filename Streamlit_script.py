@@ -15,7 +15,6 @@ import pickle as pkl
 
 from helper_code import *
 
-@st.cache
 def open_file(filename):
     with open(filename, 'r') as f:
         data = f.readlines()
