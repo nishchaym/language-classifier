@@ -1,30 +1,26 @@
 import matplotlib
-#matplotlib inline
-#config InlineBackend.figure_format = 'svg'
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 import streamlit as st
-
 import numpy as np
 import string
-
+from PIL import Image
 from collections import defaultdict
-
 from sklearn.metrics import f1_score
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import CountVectorizer
-#from sklearn.metrics import plot_confusion_matrix, plot_roc_curve, plot_precision_recall_curve
-
 from sklearn.metrics import precision_score, recall_score 
 import joblib
 import pickle as pkl
 
 from helper_code import *
 
+@st.cache
 def open_file(filename):
     with open(filename, 'r') as f:
         data = f.readlines()
     return data
+
 
 def show_statistics(data):
     for language, sentences in data.items():
@@ -33,12 +29,7 @@ def show_statistics(data):
         number_of_words = 0
         number_of_unique_words = 0
         sample_extract = ''
-        
-        # take a few minutes to try populate these variables
-        
-        # here is a hint -- word_list breaks the collections of sentences into a list of words
         word_list = ' '.join(sentences).split()
-        
         number_of_sentences = len(sentences)
         number_of_words = len(word_list)
         number_of_unique_words = len(set(word_list))
@@ -52,21 +43,17 @@ def show_statistics(data):
         print(f'Number of unique words\t:\t {number_of_unique_words}')
         print(f'Sample extract\t\t:\t {sample_extract}...\n')
 
+
 def preprocess(text):
     '''
     Removes punctuation and digits from a string, and converts all characters to lowercase. 
     Also clears all \n and hyphens (splits hyphenated words into two words).
     
-    '''
-        
-    preprocessed_text = text
-    
+    '''    
+    preprocessed_text = text  
     preprocessed_text = text.lower().replace('-', ' ')
-    
     translation_table = str.maketrans('\n', ' ', string.punctuation+string.digits)
-    
     preprocessed_text = preprocessed_text.translate(translation_table)
-    
     return preprocessed_text
 
 
@@ -77,12 +64,15 @@ def main():
 	st.markdown("Which language is this? ")
 	st.sidebar.markdown("Which language is this? ")
 
+	image = Image.open('bayes.jpeg')
+	st.image(image, use_column_width=True)
+
 	data_raw = dict()
 	data_raw['Slovak'] = open_file('Data/Sentences/train_sentences.sk')
 	data_raw['Czech'] = open_file('Data/Sentences/train_sentences.cs')
 	data_raw['English'] = open_file('Data/Sentences/train_sentences.en')	
 
-	show_statistics(data_raw)
+	#show_statistics(data_raw)
 
 	data_preprocessed = {k: [preprocess(sentence) for sentence in v] for k, v in data_raw.items()}
 
@@ -138,8 +128,7 @@ def main():
 		joblib.dump(model, 'Data/Models/final_model.joblib')
 		joblib.dump(vectorizer, 'Data/Vectorizers/final_model.joblib')
 	
-	st.markdown("Enter your Sentence:")
-	text = st.text_input("")
+	text = st.text_input("Enter your sentence: ")
 
 
 	if st.button("Predict",key="predict"):
@@ -149,7 +138,10 @@ def main():
 		text = [split_into_subwords_function(text)]
 		text_vectorized = vector.transform(text)
 
-		st.write("Prediction on entered sentence is: ",mod.predict(text_vectorized)[0])
+		st.header("Prediction on entered sentence is: "+mod.predict(text_vectorized)[0])
+
+
+
 
 
 if __name__ == '__main__':
