@@ -133,10 +133,8 @@ def main():
 	if st.button("Predict",key="predict"):
 		mod =joblib.load('Data/Models/final_model.joblib')
 		vector = joblib.load('Data/Vectorizers/final_model.joblib')
-		text = preprocess_function(text)
-		text = [split_into_subwords_function(text)]
+		text = [text]
 		text_vectorized = vector.transform(text)
-
 		st.header("Prediction on entered sentence is: "+mod.predict(text_vectorized)[0])
 
 
