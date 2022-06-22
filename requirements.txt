@@ -1,6 +1,6 @@
 streamlit==0.60.0
 joblib==0.15.1
-numpy==1.16.2
+numpy==1.22.0
 pandas==0.24.2
 matplotlib==3.0.3
 Pillow==7.1.2
